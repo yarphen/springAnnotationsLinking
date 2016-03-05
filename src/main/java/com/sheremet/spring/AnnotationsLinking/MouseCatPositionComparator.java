@@ -1,19 +1,8 @@
 package com.sheremet.spring.AnnotationsLinking;
 
-import java.util.Comparator;
-
-public class MouseCatPostionComparator implements Comparator<MouseCatPosition> {
-	private final int mode;
-	public MouseCatPostionComparator(int mode) {
-
-		switch (mode) {
-		case MouseCatGame.CAT:case MouseCatGame.MOUSE:
-			break;
-		default:
-			throw new IllegalArgumentException();
-		}
-		this.mode=mode;
-	}
+public class MouseCatPositionComparator implements MouseCatComparator{
+	private int mode;
+	public MouseCatPositionComparator() {}
 	public int compare(MouseCatPosition o1, MouseCatPosition o2) {
 		int d1 =Utils. distance(o1);
 		int d2 = Utils.distance(o2);
@@ -37,13 +26,13 @@ public class MouseCatPostionComparator implements Comparator<MouseCatPosition> {
 			else if(lose1&&!lose2)
 				return -1;
 			if (lose1&&lose2)return 0;
-//			boolean shadowAttack1 = isShadowAttack(o1);
-//			boolean shadowAttack2 = isShadowAttack(o2);
-//			if (shadowAttack1&&!shadowAttack2)
-//				return 1;
-//			else if (!shadowAttack1&&shadowAttack2){
-//				return -1;
-//			}
+			boolean shadowAttack1 = isShadowAttack(o1);
+			boolean shadowAttack2 = isShadowAttack(o2);
+			if (shadowAttack1&&!shadowAttack2)
+				return 1;
+			else if (!shadowAttack1&&shadowAttack2){
+				return -1;
+			}
 			if (diag1>diag2)return 1;
 			if (diag1<diag2)return -1;
 			return -Integer.compare(d1, d2);
@@ -69,5 +58,17 @@ public class MouseCatPostionComparator implements Comparator<MouseCatPosition> {
 		int shadowDiagAfter = Utils.diagonality(myNewPosition, hisOldPosition);
 		if (shadowDiagAfter==shadowDiagBefore&&shadowDistAfter==shadowDistBefore)return true;
 		else return false;
+	}
+	public void setMode(int mode) {
+		switch (mode) {
+		case MouseCatGame.CAT:case MouseCatGame.MOUSE:
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
+		this.mode=mode;
+	}
+	public int getMode() {
+		return mode;
 	}
 }

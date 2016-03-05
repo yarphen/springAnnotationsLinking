@@ -7,8 +7,16 @@
 	<context:component-scan base-package="com.sheremet.spring.AnnotationsLinking" />
 	<bean id="game"
 		class="com.sheremet.spring.AnnotationsLinking.MouseCatGameImpl">
+		<constructor-arg value="10"/>
+		<constructor-arg value="10"/>
 		<constructor-arg value="5"/>
-		<constructor-arg value="5"/>
-		<constructor-arg value="6"/>
+	</bean>
+	<bean id="catComp"
+		class="com.sheremet.spring.AnnotationsLinking.MouseCatNotExactComparator">
+		<constructor-arg value="10"/>
+	</bean>
+	<bean id="mouseComp"
+		class="com.sheremet.spring.AnnotationsLinking.MouseCatNotExactComparator">
+		<constructor-arg value="9"/>
 	</bean>
 </beans>

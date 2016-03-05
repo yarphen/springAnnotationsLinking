@@ -1,7 +1,6 @@
 package com.sheremet.spring.AnnotationsLinking;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
@@ -16,6 +15,10 @@ import acm.program.GraphicsProgram;
 
 @Component("drawer")
 public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawer  {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2417202843236004872L;
 	private static final int MAXPOSS = 8;
 	private static final double DEFAULT_CELL_SIZE = 50;
 	public final double APPLICATION_WIDTH;
