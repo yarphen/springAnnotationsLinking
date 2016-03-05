@@ -1,62 +1,60 @@
 package com.sheremet.spring.AnnotationsLinking;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class MouseCatGameImpl implements MouseCatGame{
 	private int maxx, maxy;
-	private int xCat=1, yCat=0, xMouse, yMouse;
-	private int xCatShadow=-1, yCatShadow=-1, xMouseShadow=-1, yMouseShadow=-1;
+	private MouseCatPosition position;
 	private int status=0;
 	private int turns;
+	private int mode;
+	@Autowired
+	private MouseCatSolver solver;
 	public MouseCatGameImpl() {
-		initGame(DEFAULT_SIZE, DEFAULT_SIZE);
+		this(DEFAULT_SIZE, DEFAULT_SIZE, TWOUSERS_MODE);
 	}
-	public MouseCatGameImpl(int m, int n) {
-		initGame(m, n);
+	public MouseCatGameImpl(int m, int n, int mode) {
+		initGame(m, n, mode);
 	}
-	public void initGame(int m, int n) {
+	public void initGame(int m, int n, int mode) {
+		this.mode = mode;
 		turns = 0;
-		xCat=1;
-		yCat=0;
-		xCatShadow=-1;
-		yCatShadow=-1;
-		xMouseShadow=-1; 
-		yMouseShadow=-1;
 		maxx = m;
 		maxy = n;
 		if (maxx<3||maxy<3)throw new IllegalArgumentException();
-		yMouse = maxy-1;
-		xMouse = (maxx-2)/2*2+1;
-		status=1;
+		position=new MouseCatPosition(new Player(new Position((maxx-2)/2*2+(maxy%2), maxy-1),  new Position(-1, -1)), new Player(new Position(1, 0), new Position(-1, -1)));
+		status=CAT;
 	}
-	
+
 	public int getXForCat() {
-		return xCat;
+		return position.getCat().getPlayerPosition().getX();
 	}
 	public int getYForCat() {
-		return yCat;
+		return position.getCat().getPlayerPosition().getY();
 	}
 
 	public int getXForMouse() {
-		return xMouse;
+		return position.getMouse().getPlayerPosition().getX();
 	}
 
 	public int getYForMouse() {
-		return yMouse;
+		return position.getMouse().getPlayerPosition().getY();
 	}
-
-	public boolean turn(int x, int y) {
-		if (allow(x, y)){
-			if (turns%2==0){
-				xCatShadow=xCat;
-				yCatShadow=yCat;
-				xCat=x;
-				yCat=y;
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+	public boolean turn(Position p) {
+		if (allow(p)){
+			boolean isCat = turns%2==0;
+			System.out.println("Turn: "+(isCat?"Cat":"Mouse")+" "+p.getX()+", "+p.getY());
+			if (isCat){
+				position.getCat().setShadowPosition(position.getCat().getPlayerPosition());
+				position.getCat().setPlayerPosition(p);
 			}	else  {
-				xMouseShadow=xMouse;
-				yMouseShadow=yMouse;
-				xMouse=x;
-				yMouse=y;
+				position.getMouse().setShadowPosition(position.getMouse().getPlayerPosition());
+				position.getMouse().setPlayerPosition(p);
 			}
-			if (xCat==xMouse&&yCat==yMouse){
+			if (position.getCat().getPlayerPosition().equals(position.getMouse().getPlayerPosition())){
 				status+=2;
 			}else{
 				status = (1-turns%2)+1;
@@ -66,24 +64,23 @@ public class MouseCatGameImpl implements MouseCatGame{
 		}else
 			return false;
 	}
-
+	public void turn() {
+		solver.solveStep(this);
+	}
 	public int gameStatus() {
 		return status;
 	}
-
 	public int getXForCatShadow() {
-		return xCatShadow;
+		return position.getCat().getShadowPosition().getX();
 	}
-
 	public int getYForCatShadow() {
-		return yCatShadow;
+		return position.getCat().getShadowPosition().getY();
 	}
-
 	public int getXForMouseShadow() {
-		return xMouseShadow;
+		return position.getMouse().getShadowPosition().getX();
 	}
 	public int getYForMouseShadow() {
-		return yMouseShadow;
+		return position.getMouse().getShadowPosition().getY();
 	}
 	public int getMaxX() {
 		return maxx;
@@ -91,30 +88,30 @@ public class MouseCatGameImpl implements MouseCatGame{
 	public int getMaxY() {
 		return maxy;
 	}
-
-	public boolean allow(int x, int y) {
-		int playerX, playerY, shadowX, shadowY;
+	public boolean allow(Position pos) {
+		Player p = null;
 		if (turns%2==0){
-			playerX = xCat;
-			playerY = yCat;
-			shadowX = xCatShadow;
-			shadowY = yCatShadow;
+			p = position.getCat();
 		}else{
-			playerX = xMouse;
-			playerY = yMouse;
-			shadowX = xMouseShadow;
-			shadowY = yMouseShadow;
+			p = position.getMouse();
 		}
-		int x1=x-playerX;
-		int y1=y-playerY;
-		if (Math.abs(x1)+Math.abs(y1)!=2)return false;
-		if (x<0||x>=maxx)return false;
-		if (y<0||y>=maxy)return false;
-		if (x==shadowX&&y==shadowY)return false;
+		Position r = pos.sub(p.getPlayerPosition());
+		if (Math.abs(r.getX())+Math.abs(r.getY())!=2)return false;
+		if (pos.getX()<0||pos.getX()>=maxx)return false;
+		if (pos.getY()<0||pos.getY()>=maxy)return false;
+		if (pos.equals(p.getShadowPosition()))return false;
 		return true;
 	}
 	public void reset() {
-		initGame(maxx, maxy);
+		initGame(maxx, maxy, mode);
 	}
-
+	public boolean isAutoTurn(){
+		return (status==CAT||status==MOUSE)&&(mode==AUTO_MODE||mode==(turns%2+6));
+	}
+	public MouseCatPosition getPosition() {
+		return position;
+	}
+	public int getMode() {
+		return mode;
+	}
 }
