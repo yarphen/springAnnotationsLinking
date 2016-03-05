@@ -1,4 +1,4 @@
-package com.sheremet.aspectj.AnnotationsLinking;
+package com.sheremet.spring.AnnotationsLinking;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;

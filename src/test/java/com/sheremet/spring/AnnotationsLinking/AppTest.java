@@ -1,4 +1,4 @@
-package com.sheremet.aspectj.AnnotationsLinking;
+package com.sheremet.spring.AnnotationsLinking;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

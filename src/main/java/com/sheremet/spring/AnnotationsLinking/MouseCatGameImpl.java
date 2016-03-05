@@ -1,4 +1,4 @@
-package com.sheremet.aspectj.AnnotationsLinking;
+package com.sheremet.spring.AnnotationsLinking;
 
 public class MouseCatGameImpl implements MouseCatGame{
 	private int maxx, maxy;

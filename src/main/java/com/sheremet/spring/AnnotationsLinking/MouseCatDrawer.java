@@ -1,4 +1,4 @@
-package com.sheremet.aspectj.AnnotationsLinking;
+package com.sheremet.spring.AnnotationsLinking;
 
 public interface MouseCatDrawer {
 	void start();

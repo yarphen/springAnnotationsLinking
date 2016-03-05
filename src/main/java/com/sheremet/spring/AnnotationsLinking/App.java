@@ -1,4 +1,4 @@
-package com.sheremet.aspectj.AnnotationsLinking;
+package com.sheremet.spring.AnnotationsLinking;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
