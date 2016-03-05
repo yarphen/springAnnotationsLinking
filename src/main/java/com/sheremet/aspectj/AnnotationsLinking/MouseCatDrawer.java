@@ -6,4 +6,5 @@ public interface MouseCatDrawer {
 	void drawMouse();
 	void drawCat();
 	void turn(int x,int y);
+	void setCellSize(double size);
 }

@@ -5,29 +5,39 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JOptionPane;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import acm.graphics.GOval;
 import acm.graphics.GRect;
 import acm.program.GraphicsProgram;
 
+@Component("drawer")
 public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawer  {
 	private static final int MAXPOSS = 8;
+	private static final double DEFAULT_CELL_SIZE = 50;
+	public static final double APPLICATION_WIDTH = DEFAULT_CELL_SIZE*(MouseCatGame.DEFAULT_SIZE+1);
+	public static final double APPLICATION_HEIGHT =DEFAULT_CELL_SIZE*(MouseCatGame.DEFAULT_SIZE+2);
 	private GOval mouse;
 	private GOval cat;
-	private double size;
+	private double cellSize = DEFAULT_CELL_SIZE;
 	private int x, y;
-	private GRect[]possibilities = new GRect[8];
+	private GRect[]possibilities = new GRect[MAXPOSS];
 	private MouseCatGame game;
-	public MouseCatDrawerImpl(MouseCatGame game, double size) {
+	@Autowired
+	public MouseCatDrawerImpl(MouseCatGame game) {
 		this.game = game;
-		this.size = size;
 		this.x = game.getMaxX();
 		this.y = game.getMaxY();
+	}
+	public void setCellSize(double size) {
+		this.cellSize = size;
 	}
 	public void drawBoard() {
 		GRect temp;
 		for(int i=0; i<x; i++){
 			for(int j=0; j<y; j++){
-				temp = new GRect(size*i, size*j, size, size);
+				temp = new GRect(cellSize*i, cellSize*j, cellSize, cellSize);
 				if ((i+j)%2==1){
 					temp.setFilled(true);
 					temp.setFillColor(Color.LIGHT_GRAY);
@@ -40,7 +50,7 @@ public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawe
 
 	public void drawMouse() {
 		if (mouse==null){
-			mouse = new GOval(size, size);
+			mouse = new GOval(cellSize, cellSize);
 			mouse.setFilled(true);
 			mouse.setFillColor(Color.GREEN);
 			add(mouse);
@@ -49,7 +59,7 @@ public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawe
 
 	public void drawCat() {
 		if (cat==null){
-			cat = new GOval(size, size);
+			cat = new GOval(cellSize, cellSize);
 			cat.setFilled(true);
 			cat.setFillColor(Color.RED);
 			add(cat);
@@ -74,24 +84,20 @@ public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawe
 		}
 		switch (game.gameStatus()) {
 		case MouseCatGame.WINNER_CAT:
-			removeAll();
+			showAll(false);
 			JOptionPane.showMessageDialog(this, "Cat ate the mouse!");
-			game.reset();
-			init();
-			redraw();
+			reset();
 			break;
 		case MouseCatGame.WINNER_MOUSE:
-			removeAll();
+			showAll(false);
 			JOptionPane.showMessageDialog(this, "Mouse beat the cat!");
-			game.reset();
-			init();
-			redraw();
+			reset();
 			break;
 		}
 	}
 	private void redraw() {
-		mouse.setLocation(size*game.getXForMouse(), size*game.getYForMouse());
-		cat.setLocation(size*game.getXForCat(), size*game.getYForCat());
+		mouse.setLocation(cellSize*game.getXForMouse(), cellSize*game.getYForMouse());
+		cat.setLocation(cellSize*game.getXForCat(), cellSize*game.getYForCat());
 		mouse.sendToFront();
 		cat.sendToFront();
 	}
@@ -108,12 +114,12 @@ public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawe
 				}
 				if (game.allow(i1+x, j1+y)){
 					if (possibilities[c]==null){
-						possibilities[c] = new GRect(size, size);
+						possibilities[c] = new GRect(cellSize, cellSize);
 						possibilities[c].setFilled(true);
 						possibilities[c].setFillColor(Color.GRAY);
 						add(possibilities[c]);
 					}
-					possibilities[c].setLocation(size*(i1+x), size*(j1+y));
+					possibilities[c].setLocation(cellSize*(i1+x), cellSize*(j1+y));
 					possibilities[c].setVisible(true);
 					c++;
 				}
@@ -133,8 +139,27 @@ public class MouseCatDrawerImpl extends GraphicsProgram implements MouseCatDrawe
 		drawPossibilities(1, 0);
 		addMouseListeners();
 	}
+	private void reset(){
+		game.reset();
+		redraw();
+		showAll(true);
+		drawPossibilities(1, 0);
+	}
+	private void showAll(boolean b) {
+		cat.setVisible(b);
+		mouse.setVisible(b);
+		for(GRect r : possibilities){
+			if (r!=null){
+				r.setVisible(b);
+			}
+		}
+	}
+	@Override
+	public void run() {
+		setSize((int)(APPLICATION_WIDTH), (int)(APPLICATION_HEIGHT));
+	}
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		turn((int)(arg0.getX()/size), (int)(arg0.getY()/size));
+		turn((int)(arg0.getX()/cellSize), (int)(arg0.getY()/cellSize));
 	}
 }

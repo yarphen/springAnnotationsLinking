@@ -6,10 +6,20 @@ public class MouseCatGameImpl implements MouseCatGame{
 	private int xCatShadow=-1, yCatShadow=-1, xMouseShadow=-1, yMouseShadow=-1;
 	private int status=0;
 	private int turns;
+	public MouseCatGameImpl() {
+		initGame(DEFAULT_SIZE, DEFAULT_SIZE);
+	}
 	public MouseCatGameImpl(int m, int n) {
 		initGame(m, n);
 	}
 	public void initGame(int m, int n) {
+		turns = 0;
+		xCat=1;
+		yCat=0;
+		xCatShadow=-1;
+		yCatShadow=-1;
+		xMouseShadow=-1; 
+		yMouseShadow=-1;
 		maxx = m;
 		maxy = n;
 		if (maxx<3||maxy<3)throw new IllegalArgumentException();

@@ -1,6 +1,7 @@
 package com.sheremet.aspectj.AnnotationsLinking;
 
 public interface MouseCatGame {
+	public static final int DEFAULT_SIZE = 9;
 	public static final int  UNITIALIZED = 0;
 	public static final int  CAT = 1;
 	public static final int  MOUSE = 2;
